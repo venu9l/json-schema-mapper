@@ -1,0 +1,42 @@
+# Development files
+examples/
+test.js
+*.test.js
+*.spec.js
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# Documentation (keep README.md)
+CHANGELOG.md
+CONTRIBUTING.md
+
+# CI/CD
+.github/
+.travis.yml
+.circleci/
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary
+tmp/
+temp/
+*.tmp
+

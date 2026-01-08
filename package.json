@@ -1,0 +1,54 @@
+{
+    "name": "json-restruct",
+    "version": "1.0.0",
+    "description": "A high-performance, declarative schema based system for restructuring JSON data into well-defined, API-ready JSON payloads.",
+    "main": "src/index.js",
+    "types": "src/index.d.ts",
+    "scripts": {
+        "test": "node src/test.js",
+        "lint": "eslint src/**/*.js",
+        "format": "prettier --write \"src/**/*.js\""
+    },
+    "keywords": [
+        "json",
+        "mapper",
+        "json-mapper",
+        "json-restruct",
+        "json-restruct",
+        "transformer",
+        "etl",
+        "excel",
+        "data-transformation",
+        "schema",
+        "mapping",
+        "wildcard",
+        "filter",
+        "transform"
+    ],
+    "author": "Venkatesh Gandham",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/venu9l/json-schema-mapper"
+    },
+    "bugs": {
+        "url": "https://github.com/venu9l/json-schema-mapper/issues"
+    },
+    "homepage": "https://github.com/venu9l",
+    "engines": {
+        "node": ">=12.0.0"
+    },
+    "dependencies": {
+        "dayjs": "^1.11.10"
+    },
+    "devDependencies": {},
+    "files": [
+        "src/**/*.js",
+        "src/**/*.d.ts",
+        "README.md",
+        "LICENSE"
+    ],
+    "directories": {
+        "example": "examples"
+    }
+}
