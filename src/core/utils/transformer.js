@@ -13,8 +13,8 @@ dayjs.extend(utc);
 
 /**
  * Parses a transform string into a structured object.
- * @param {string} str - Transform string (e.g., "toNumber", "regex:pattern:group", "toDateTime:format:timezone")
- * @returns {{type: string, pattern?: string, group?: number, timezone?: string}} Parsed transform object
+ * @param {string} str - Transform string (e.g., "toNumber", "regex:pattern:group", "toDateTime:format:timezone", "prefix:value", "postfix:value")
+ * @returns {{type: string, pattern?: string, group?: number, timezone?: string, value?: string}} Parsed transform object
  */
 function parseTransform(str) {
     const firstColon = str.indexOf(":");
@@ -187,6 +187,18 @@ const transforms = {
         } catch (e) {
             throw new Error(`Invalid regex pattern "${pattern}": ${e.message}`);
         }
+    },
+
+    prefix: (value, parsed) => {
+        if (value === null || value === undefined || value === "") return null;
+        const prefixValue = parsed?.pattern || parsed?.value || "";
+        return String(prefixValue) + String(value);
+    },
+
+    postfix: (value, parsed) => {
+        if (value === null || value === undefined || value === "") return null;
+        const postfixValue = parsed?.pattern || parsed?.value || "";
+        return String(value) + String(postfixValue);
     }
 };
 

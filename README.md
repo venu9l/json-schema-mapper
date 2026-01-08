@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/node/v/json-restruct.svg)](https://nodejs.org/)
 
-A **high-performance JSON Schema Mapper** for transforming Excel/JSON data into structured, API-ready payloads using a **declarative schema**. Designed for ETL pipelines, data normalization, and handling large datasets (100k+ rows) efficiently.
+A **high-performance JSON mapping engine** for transforming JSON data into structured, API-ready payloads using **declarative schemas**.
 
 ## ✨ Features
 
@@ -32,7 +32,7 @@ npm install json-restruct
 ## 🚀 Quick Start
 
 ```javascript
-const { map } = require('json-restruct');
+const _json = require('json-restruct');
 
 const sourceData = {
   rows: [
@@ -61,7 +61,7 @@ const schema = {
   }
 };
 
-const result = map(sourceData, schema);
+const result = _json.map(sourceData, schema);
 console.log(result);
 // Output: [{ application_no: 230085, name: 'John Doe', age: 27 }]
 ```
@@ -87,10 +87,10 @@ console.log(result);
 
 ```javascript
 // CommonJS
-const { map, validateSchema } = require('json-restruct');
+const _json = require('json-restruct');
 
 // ES Modules (if supported)
-import { map, validateSchema } from 'json-restruct';
+import _json from 'json-restruct';
 ```
 
 ### Simple Mapping
@@ -108,7 +108,7 @@ const schema = {
   age: { path: 'users.*.age', transform: 'toNumber' }
 };
 
-const result = map(source, schema);
+const result = _json.map(source, schema);
 // [
 //   { name: 'Alice', age: 30 },
 //   { name: 'Bob', age: 25 }
@@ -216,6 +216,8 @@ Transforms modify values during mapping. They can be applied as strings, arrays 
 | `toSnakeCase` | Converts to snake_case | `"HelloWorld"` → `"hello_world"` |
 | `toKebabCase` | Converts to kebab-case | `"HelloWorld"` → `"hello-world"` |
 | `toPascalCase` | Converts to PascalCase | `"hello_world"` → `"HelloWorld"` |
+| `prefix` | Adds prefix to value | `prefix:ID-` → `"ID-123"` |
+| `postfix` | Adds postfix to value | `postfix:-END` → `"123-END"` |
 | `regex` | Extracts using regex | `regex:\\d+:0` |
 | `toJson` | Parses JSON string | `'{"key":"value"}'` → `{key: "value"}` |
 | `toString` | Converts to string | `123` → `"123"` |
@@ -249,6 +251,36 @@ Transforms modify values during mapping. They can be applied as strings, arrays 
   id: {
     path: 'rows.*.indexing',
     transform: 'regex:(\\d+)_(\\d+):2' // Extracts second capture group
+  }
+}
+```
+
+**Prefix transform:**
+```javascript
+{
+  product_id: {
+    path: 'rows.*.id',
+    transform: 'prefix:PROD-' // Adds "PROD-" before the value
+  }
+}
+```
+
+**Postfix transform:**
+```javascript
+{
+  order_number: {
+    path: 'rows.*.order',
+    transform: 'postfix:-COMPLETE' // Adds "-COMPLETE" after the value
+  }
+}
+```
+
+**Combining prefix and postfix:**
+```javascript
+{
+  formatted_id: {
+    path: 'rows.*.id',
+    transform: ['prefix:ID-', 'postfix:-END'] // Pipeline: adds prefix then postfix
   }
 }
 ```
@@ -455,11 +487,11 @@ arrayField[key=value].property
 Validate schemas before mapping to catch errors early:
 
 ```javascript
-const { validateSchema } = require('json-restruct');
+const _json = require('json-restruct');
 
 try {
-  validateSchema(schema);
-  const result = map(source, schema);
+  _json.validateSchema(schema);
+  const result = _json.map(source, schema);
 } catch (error) {
   console.error('Schema validation failed:', error.message);
 }
@@ -483,7 +515,7 @@ Maps source data to output format using a declarative schema.
 
 **Example:**
 ```javascript
-const result = map(sourceData, mappingSchema);
+const result = _json.map(sourceData, mappingSchema);
 ```
 
 ### `validateSchema(schema)`
@@ -499,7 +531,7 @@ Validates a mapping schema for correctness.
 **Example:**
 ```javascript
 try {
-  validateSchema(schema);
+  _json.validateSchema(schema);
 } catch (error) {
   console.error(error.message);
 }
