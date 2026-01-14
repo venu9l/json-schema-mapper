@@ -218,6 +218,7 @@ Transforms modify values during mapping. They can be applied as strings, arrays 
 | `toPascalCase` | Converts to PascalCase | `"hello_world"` → `"HelloWorld"` |
 | `prefix` | Adds prefix to value | `prefix:ID-` → `"ID-123"` |
 | `postfix` | Adds postfix to value | `postfix:-END` → `"123-END"` |
+| `static` | Returns static value | `static:ACTIVE` → `"ACTIVE"` (ignores input) |
 | `regex` | Extracts using regex | `regex:\\d+:0` |
 | `toJson` | Parses JSON string | `'{"key":"value"}'` → `{key: "value"}` |
 | `toString` | Converts to string | `123` → `"123"` |
@@ -281,6 +282,30 @@ Transforms modify values during mapping. They can be applied as strings, arrays 
   formatted_id: {
     path: 'rows.*.id',
     transform: ['prefix:ID-', 'postfix:-END'] // Pipeline: adds prefix then postfix
+  }
+}
+```
+
+**Static transform:**
+```javascript
+{
+  status: {
+    path: 'rows.*.any_field',
+    transform: 'static:ACTIVE' // Always returns "ACTIVE" regardless of input value
+  }
+}
+```
+
+**Static transform with different values:**
+```javascript
+{
+  type: {
+    path: 'rows.*.data',
+    transform: 'static:user' // Always returns "user"
+  },
+  category: {
+    path: 'rows.*.data',
+    transform: 'static:premium' // Always returns "premium"
   }
 }
 ```

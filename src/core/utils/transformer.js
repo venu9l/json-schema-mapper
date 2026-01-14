@@ -13,7 +13,7 @@ dayjs.extend(utc);
 
 /**
  * Parses a transform string into a structured object.
- * @param {string} str - Transform string (e.g., "toNumber", "regex:pattern:group", "toDateTime:format:timezone", "prefix:value", "postfix:value")
+ * @param {string} str - Transform string (e.g., "toNumber", "regex:pattern:group", "toDateTime:format:timezone", "prefix:value", "postfix:value", "static:value")
  * @returns {{type: string, pattern?: string, group?: number, timezone?: string, value?: string}} Parsed transform object
  */
 function parseTransform(str) {
@@ -199,6 +199,12 @@ const transforms = {
         if (value === null || value === undefined || value === "") return null;
         const postfixValue = parsed?.pattern || parsed?.value || "";
         return String(value) + String(postfixValue);
+    },
+
+    static: (value, parsed) => {
+        // Returns the static value regardless of input
+        const staticValue = parsed?.pattern || parsed?.value || "";
+        return staticValue;
     }
 };
 
