@@ -218,7 +218,9 @@ const transforms = {
 function applyConditional(value, config, applyTransformsFn) {
     for (const rule of config.when || []) {
         if (evaluateCondition(value, rule.if)) {
-            return applyTransformsFn(value, rule.then);
+            // Support both `then` (documented) and `than` (common typo / alias)
+            const thenTransform = rule.then ?? rule.than;
+            return applyTransformsFn(value, thenTransform);
         }
     }
 

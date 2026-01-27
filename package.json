@@ -1,6 +1,6 @@
 {
     "name": "json-restruct",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "A high-performance, declarative schema based system for restructuring JSON data into well-defined, API-ready JSON payloads.",
     "main": "src/index.js",
     "types": "src/index.d.ts",

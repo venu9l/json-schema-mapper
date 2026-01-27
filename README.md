@@ -333,7 +333,8 @@ Use conditional transforms to apply different transformations based on value con
 {
   transform: {
     when: [
-      { if: <condition>, then: <transform> }
+      // `then` can be a single transform or an array (pipeline)
+      { if: <condition>, then: <transform or [transform, ...]> }
     ],
     default: <transform> // Optional
   }
@@ -382,6 +383,28 @@ Use conditional transforms to apply different transformations based on value con
         {
           if: { regex: '^\\d+_\\d+$' },
           then: 'regex:(\\d+)_(\\d+):2'
+        }
+      ],
+      default: null
+    }
+  }
+}
+```
+
+**Conditional with multiple transforms (pipeline) in `then`:**
+```javascript
+{
+  test_id: {
+    path: 'rows.*.Indexing',
+    transform: {
+      when: [
+        {
+          if: { regex: '^\\d+$' },
+          // Apply regex, then add a postfix using a transform pipeline
+          then: [
+            'regex:(\\d+):1',
+            'postfix: Y'
+          ]
         }
       ],
       default: null
