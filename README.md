@@ -209,6 +209,7 @@ Transforms modify values during mapping. They can be applied as strings, arrays 
 |-----------|-------------|---------|
 | `toNumber` | Converts to number | `"123"` → `123` |
 | `toDateTime` | Formats date/time | `toDateTime:YYYY-MM-DD HH:mm:ss` |
+| `currentDateTime` | Returns current date/time | `currentDateTime:YYYY-MM-DD` → `"2024-01-15"` |
 | `toLowerCase` | Converts to lowercase | `"HELLO"` → `"hello"` |
 | `toUpperCase` | Converts to uppercase | `"hello"` → `"HELLO"` |
 | `toTitleCase` | Converts to title case | `"hello world"` → `"Hello World"` |
@@ -242,6 +243,24 @@ Transforms modify values during mapping. They can be applied as strings, arrays 
   date: {
     path: 'rows.*.timestamp',
     transform: 'toDateTime:YYYY-MM-DD HH:mm:ss'
+  }
+}
+```
+
+**Current DateTime with format:**
+```javascript
+{
+  created_at: {
+    path: 'rows.*.any_field',
+    transform: 'currentDateTime:YYYY-MM-DD HH:mm:ss' // Returns current date/time in specified format
+  },
+  date_only: {
+    path: 'rows.*.any_field',
+    transform: 'currentDateTime:YYYY-MM-DD' // Returns current date only
+  },
+  timestamp: {
+    path: 'rows.*.any_field',
+    transform: 'currentDateTime' // Returns default format: "YYYY-MM-DD HH:mm:ss"
   }
 }
 ```

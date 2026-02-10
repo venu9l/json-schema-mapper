@@ -13,8 +13,8 @@ dayjs.extend(utc);
 
 /**
  * Parses a transform string into a structured object.
- * @param {string} str - Transform string (e.g., "toNumber", "regex:pattern:group", "toDateTime:format:timezone", "prefix:value", "postfix:value", "static:value")
- * @returns {{type: string, pattern?: string, group?: number, timezone?: string, value?: string}} Parsed transform object
+ * @param {string} str - Transform string (e.g., "toNumber", "regex:pattern:group", "toDateTime:format:timezone", "currentDateTime:format", "prefix:value", "postfix:value", "static:value")
+ * @returns {{type: string, pattern?: string, group?: number, timezone?: string, value?: string, format?: string}} Parsed transform object
  */
 function parseTransform(str) {
     const firstColon = str.indexOf(":");
@@ -87,8 +87,9 @@ const transforms = {
         }
     },
 
-    currentDateTime: (v) => {
-        return dayjs().format("YYYY-MM-DD HH:mm:ss");
+    currentDateTime: (v, parsed) => {
+        const format = parsed?.pattern || parsed?.format || "YYYY-MM-DD HH:mm:ss";
+        return dayjs().format(format);
     },
 
     toLowerCase: (v) =>
