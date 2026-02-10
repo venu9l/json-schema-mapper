@@ -208,7 +208,7 @@ Transforms modify values during mapping. They can be applied as strings, arrays 
 | Transform | Description | Example |
 |-----------|-------------|---------|
 | `toNumber` | Converts to number | `"123"` → `123` |
-| `toDateTime` | Formats date/time | `toDateTime:YYYY-MM-DD HH:mm:ss` |
+| `toDateTime` | Formats date/time with optional input format parsing | `toDateTime:YYYY-MM-DD HH:mm:ss` or `toDateTime:DD/MM/YYYY|YYYY-MM-DD` |
 | `currentDateTime` | Returns current date/time | `currentDateTime:YYYY-MM-DD` → `"2024-01-15"` |
 | `toLowerCase` | Converts to lowercase | `"HELLO"` → `"hello"` |
 | `toUpperCase` | Converts to uppercase | `"hello"` → `"HELLO"` |
@@ -242,10 +242,38 @@ Transforms modify values during mapping. They can be applied as strings, arrays 
 {
   date: {
     path: 'rows.*.timestamp',
-    transform: 'toDateTime:YYYY-MM-DD HH:mm:ss'
+    transform: 'toDateTime:YYYY-MM-DD HH:mm:ss' // Output format only
   }
 }
 ```
+
+**toDateTime with fromFormat and toFormat:**
+```javascript
+{
+  // Parse input in DD/MM/YYYY format and output in YYYY-MM-DD format
+  formatted_date: {
+    path: 'rows.*.date',
+    transform: 'toDateTime:DD/MM/YYYY|YYYY-MM-DD'
+  },
+  // Parse input format, output format, and specify timezone (use pipes throughout)
+  date_with_tz: {
+    path: 'rows.*.timestamp',
+    transform: 'toDateTime:MM/DD/YYYY HH:mm|YYYY-MM-DD HH:mm:ss|America/New_York'
+  },
+  // Output format with timezone (backward compatible - uses colons)
+  date_tz: {
+    path: 'rows.*.timestamp',
+    transform: 'toDateTime:YYYY-MM-DD HH:mm:ss:UTC'
+  },
+  // Output format only (backward compatible)
+  date_only: {
+    path: 'rows.*.timestamp',
+    transform: 'toDateTime:YYYY-MM-DD'
+  }
+}
+```
+
+**Note:** When using `fromFormat`, use pipe (`|`) separators: `toDateTime:fromFormat|toFormat|timezone`. This allows formats with colons (like `HH:mm:ss`) to work correctly. For backward compatibility, `toFormat:timezone` syntax still works when not using `fromFormat`.
 
 **Current DateTime with format:**
 ```javascript

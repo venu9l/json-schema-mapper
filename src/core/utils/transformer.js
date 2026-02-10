@@ -13,8 +13,8 @@ dayjs.extend(utc);
 
 /**
  * Parses a transform string into a structured object.
- * @param {string} str - Transform string (e.g., "toNumber", "regex:pattern:group", "toDateTime:format:timezone", "currentDateTime:format", "prefix:value", "postfix:value", "static:value")
- * @returns {{type: string, pattern?: string, group?: number, timezone?: string, value?: string, format?: string}} Parsed transform object
+ * @param {string} str - Transform string (e.g., "toNumber", "regex:pattern:group", "toDateTime:fromFormat|toFormat|timezone", "toDateTime:toFormat:timezone", "currentDateTime:format", "prefix:value", "postfix:value", "static:value")
+ * @returns {{type: string, pattern?: string, group?: number, timezone?: string, value?: string, format?: string, fromFormat?: string, toFormat?: string}} Parsed transform object
  */
 function parseTransform(str) {
     const firstColon = str.indexOf(":");
@@ -23,14 +23,58 @@ function parseTransform(str) {
     const type = str.slice(0, firstColon);
     const rest = str.slice(firstColon + 1);
 
+    // Special handling for toDateTime which may have fromFormat|toFormat|timezone
+    // or toFormat:timezone (backward compatibility)
+    if (type === "toDateTime") {
+        // Check if rest contains a pipe separator (indicates fromFormat usage)
+        const pipeIndex = rest.indexOf("|");
+        
+        if (pipeIndex !== -1) {
+            // Format: toDateTime:fromFormat|toFormat|timezone or toDateTime:fromFormat|toFormat
+            // Split by pipe to handle formats with colons
+            const pipeParts = rest.split("|");
+            const fromFormat = pipeParts[0];
+            const toFormat = pipeParts[1];
+            const timezone = pipeParts[2] || "UTC";
+            
+            return {
+                type,
+                fromFormat: fromFormat,
+                toFormat: toFormat,
+                timezone: timezone
+            };
+        } else {
+            // Backward compatibility: toFormat:timezone or toFormat
+            const parts = rest.split(":");
+            if (parts.length >= 2) {
+                // Format: toDateTime:toFormat:timezone
+                return {
+                    type,
+                    toFormat: parts[0],
+                    pattern: parts[0], // Keep for backward compatibility
+                    format: parts[0],
+                    timezone: parts[1]
+                };
+            } else {
+                // Format: toDateTime:toFormat
+                return {
+                    type,
+                    toFormat: parts[0],
+                    pattern: parts[0], // Keep for backward compatibility
+                    format: parts[0]
+                };
+            }
+        }
+    }
+
     const parts = rest.split(":");
 
-    // Special handling for toDateTime which may have format and timezone
-    if (type === "toDateTime" && parts.length >= 2) {
+    // Special handling for currentDateTime - format may contain colons
+    if (type === "currentDateTime") {
         return {
             type,
-            pattern: parts[0],
-            timezone: parts[1]
+            pattern: rest, // Use the entire rest string as format (may contain colons)
+            format: rest
         };
     }
 
@@ -75,13 +119,22 @@ const transforms = {
         if (v === null || v === undefined || v === "") return null;
 
         // Support both parsed object and direct parameters
-        const format = parsed?.pattern || parsed?.format;
+        const fromFormat = parsed?.fromFormat;
+        const toFormat = parsed?.toFormat || parsed?.pattern || parsed?.format || "YYYY-MM-DD HH:mm:ss";
         const timezone = parsed?.timezone || parsed?.tz || "UTC";
 
         try {
-            return dayjs(v)
+            let date;
+            // If fromFormat is provided, parse the input using that format
+            if (fromFormat) {
+                date = dayjs(v, fromFormat);
+            } else {
+                date = dayjs(v);
+            }
+            
+            return date
                 .tz(timezone)
-                .format(format || "YYYY-MM-DD HH:mm:ss");
+                .format(toFormat);
         } catch (e) {
             throw new Error(`DateTime transform error: ${e.message}`);
         }
